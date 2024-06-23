@@ -1,7 +1,23 @@
 FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-devel
 
-RUN apt update
-RUN apt-get install pciutils wget -y
+
+# Instalar dependências
+RUN apt-get update && \
+    apt-get install -y pciutils wget cmake git build-essential libncurses5-dev libncursesw5-dev libsystemd-dev libudev-dev libdrm-dev pkg-config
+
+
+# Clonar e instalar nvtop
+RUN git clone https://github.com/Syllo/nvtop.git /tmp/nvtop && \
+    mkdir -p /tmp/nvtop/build && \
+    cd /tmp/nvtop/build && \
+    cmake .. && \
+    make && \
+    make install && \
+    rm -rf /tmp/nvtop
+
+# Limpar cache do apt
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # Install Jupyter
 RUN pip install jupyter
