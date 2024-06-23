@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.0.0-cuda11.7-cudnn8-devel
+FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-devel
 
 RUN apt update
 RUN apt-get install pciutils wget -y
