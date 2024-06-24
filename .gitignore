@@ -1,5 +1,6 @@
 .cache/*
 project/data/*
+project/models/*
 project/.Trash-*/
 
 # Byte-compiled / optimized / DLL files
