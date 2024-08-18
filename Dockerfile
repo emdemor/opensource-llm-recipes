@@ -56,6 +56,7 @@ RUN pip install huggingface_hub
 RUN pip install absl-py
 RUN pip install rouge_score
 RUN pip install nvitop
+RUN pip install GPUtil==1.4.0
 # RUN pip install tensorflow
 
 # RUN pip install jupyterlab-nvdashboard
