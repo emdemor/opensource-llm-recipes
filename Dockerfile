@@ -49,7 +49,7 @@ RUN pip install langchain_openai
 RUN pip install langchain-community
 RUN pip install bitsandbytes
 RUN pip install pynvml
-RUN pip install transformers
+RUN pip install transformers==4.44.0
 RUN pip install accelerate
 RUN pip install trl
 RUN pip install huggingface_hub
