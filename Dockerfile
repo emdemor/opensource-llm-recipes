@@ -35,27 +35,27 @@ RUN pip install loralib==0.1.1 -q
 RUN pip install peft==0.11.1 -q
 RUN pip install sentencepiece==0.2.0 -q
 RUN pip install pandas==2.2.2 -q
-RUN pip install matplotlib -q
-RUN pip install scipy -q
-RUN pip install openai
-RUN pip install langchain
-RUN pip install langchain-addons
+RUN pip install matplotlib==3.9.0 -q
+RUN pip install scipy==1.13.1 -q
+RUN pip install openai==1.35.3
+RUN pip install langchain==0.2.5
+RUN pip install langchain-addons==0.0.2
 RUN pip install psycopg2-binary
 RUN pip install sqlalchemy
 RUN pip install pandas
 RUN pip install pyarrow
 RUN pip install fastparquet
-RUN pip install langchain_openai
-RUN pip install langchain-community
-RUN pip install bitsandbytes
-RUN pip install pynvml
+RUN pip install langchain-openai==0.1.9
+RUN pip install langchain-community==0.2.5
+RUN pip install bitsandbytes==0.43.1
+RUN pip install pynvml==11.5.0
 RUN pip install transformers==4.44.0
-RUN pip install accelerate
-RUN pip install trl
-RUN pip install huggingface_hub
-RUN pip install absl-py
-RUN pip install rouge_score
-RUN pip install nvitop
+RUN pip install accelerate==0.31.0
+RUN pip install trl==0.9.6
+RUN pip install huggingface_hub==0.23.4
+RUN pip install absl-py==2.1.0
+RUN pip install rouge_score==0.1.2
+RUN pip install nvitop==1.3.2
 RUN pip install GPUtil==1.4.0
 # RUN pip install tensorflow
 
@@ -65,6 +65,13 @@ RUN pip install GPUtil==1.4.0
 
 RUN mkdir /project
 COPY project/ /project/
+
+RUN apt update && apt install ffmpeg -y
+
+RUN pip install setuptools-rust==1.10.1
+RUN pip install openai-whisper==20231117
+RUN pip install yt-dlp==2024.8.6
+RUN pip install pydub=0.25.1
 
 EXPOSE 8888
 
