@@ -3,8 +3,7 @@ FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-devel
 
 # Instalar dependências
 RUN apt-get update && \
-    apt-get install -y pciutils wget cmake git build-essential libncurses5-dev libncursesw5-dev libsystemd-dev libudev-dev libdrm-dev pkg-config
-
+    apt-get install -y ffmpeg pciutils wget cmake git build-essential libncurses5-dev libncursesw5-dev libsystemd-dev libudev-dev libdrm-dev pkg-config
 
 # Clonar e instalar nvtop
 RUN git clone https://github.com/Syllo/nvtop.git /tmp/nvtop && \
@@ -57,6 +56,10 @@ RUN pip install absl-py==2.1.0
 RUN pip install rouge_score==0.1.2
 RUN pip install nvitop==1.3.2
 RUN pip install GPUtil==1.4.0
+RUN pip install setuptools-rust==1.10.1
+RUN pip install openai-whisper==20231117
+RUN pip install yt-dlp==2024.8.6
+RUN pip install pydub==0.25.1
 # RUN pip install tensorflow
 
 # RUN pip install jupyterlab-nvdashboard
@@ -64,14 +67,6 @@ RUN pip install GPUtil==1.4.0
 
 
 RUN mkdir /project
-COPY project/ /project/
-
-RUN apt update && apt install ffmpeg -y
-
-RUN pip install setuptools-rust==1.10.1
-RUN pip install openai-whisper==20231117
-RUN pip install yt-dlp==2024.8.6
-RUN pip install pydub=0.25.1
 
 EXPOSE 8888
 
