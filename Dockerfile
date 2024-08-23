@@ -60,6 +60,7 @@ RUN pip install setuptools-rust==1.10.1
 RUN pip install openai-whisper==20231117
 RUN pip install yt-dlp==2024.8.6
 RUN pip install pydub==0.25.1
+RUN pip install backoff==2.2.1
 # RUN pip install tensorflow
 
 # RUN pip install jupyterlab-nvdashboard
