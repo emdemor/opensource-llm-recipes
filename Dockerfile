@@ -22,36 +22,38 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN pip install jupyter
 RUN pip install ipywidgets
 RUN pip install jupyter_contrib_nbextensions
-RUN pip install sentence-transformers
-# RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('clips/mfaq');"
+RUN pip install jupyterlab_code_formatter black isort
+RUN pip install JLDracula
+RUN pip install jupyterlab_materialdarker
+RUN pip install jupyterlab-drawio
+RUN pip install jupyterlab_execute_time
+RUN pip install ipympl
 
+# Dependencias
 # RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
+RUN pip install tensorflow==2.13
+RUN pip install tensorflow-datasets==4.0.1
 RUN pip install protobuf==4.24.2
-RUN pip install datasets==2.19.2 -q
-RUN pip install evaluate==0.4.0 -q
+RUN pip install datasets==2.21.0 -q
+RUN pip install evaluate==0.4.3 -q
 RUN pip install rouge_score==0.1.2 -q
 RUN pip install loralib==0.1.1 -q
-RUN pip install peft==0.11.1 -q
+RUN pip install peft==0.12.0 -q
 RUN pip install sentencepiece==0.2.0 -q
 RUN pip install pandas==2.2.2 -q
-RUN pip install matplotlib==3.9.0 -q
-RUN pip install scipy==1.13.1 -q
-RUN pip install openai==1.35.3
-RUN pip install langchain==0.2.5
+RUN pip install matplotlib==3.9.2 -q
+RUN pip install scipy==1.14.1 -q
+RUN pip install openai==1.45.0
+RUN pip install langchain==0.3.0
 RUN pip install langchain-addons==0.0.2
-RUN pip install psycopg2-binary
-RUN pip install sqlalchemy
-RUN pip install pandas
-RUN pip install pyarrow
-RUN pip install fastparquet
-RUN pip install langchain-openai==0.1.9
-RUN pip install langchain-community==0.2.5
-RUN pip install bitsandbytes==0.43.1
+RUN pip install langchain-openai==0.2.0
+RUN pip install langchain-community==0.3.0
+RUN pip install bitsandbytes==0.43.3
 RUN pip install pynvml==11.5.0
-RUN pip install transformers==4.44.0
-RUN pip install accelerate==0.31.0
-RUN pip install trl==0.9.6
-RUN pip install huggingface_hub==0.23.4
+RUN pip install transformers==4.44.2
+RUN pip install accelerate==0.34.2
+RUN pip install trl==0.10.1
+RUN pip install huggingface_hub==0.24.7
 RUN pip install absl-py==2.1.0
 RUN pip install rouge_score==0.1.2
 RUN pip install nvitop==1.3.2
@@ -61,13 +63,38 @@ RUN pip install openai-whisper==20231117
 RUN pip install yt-dlp==2024.8.6
 RUN pip install pydub==0.25.1
 RUN pip install backoff==2.2.1
+RUN pip install flash-attn==2.6.3 --no-build-isolation
+RUN pip install psycopg2-binary
+RUN pip install sqlalchemy
+RUN pip install pyarrow
+RUN pip install fastparquet
 # RUN pip install tensorflow
 
 # RUN pip install jupyterlab-nvdashboard
 # RUN jupyter labextension install jupyterlab-nvdashboard
 
+# Coprrecting lib versions
+RUN pip uninstall typing_extensions -y
+RUN pip install typing_extensions==4.11.0
+
 
 RUN mkdir /project
+RUN mkdir /root/.jupyter
+
+ENV PATH=${PATH}:/usr/local/cuda-12.1/bin
+ENV PATH=${PATH}:/usr/local/cuda/bin
+ENV PATH=/usr/local/cuda/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+ENV CUDNN_PATH="/usr/local/cuda"
+ENV LD_LIBRARY_PATH="$CUDNN_PATH/lib64:$LD_LIBRARY_PATH"
+
+
+# A variável TF_CPP_MIN_LOG_LEVEL controla o nível de log do TensorFlow:
+#   0: Todos os logs são mostrados (padrão).
+#   1: Filtros de logs INFO.
+#   2: Filtros de logs WARNING.
+#   3: Filtros de logs ERROR.
+ENV TF_CPP_MIN_LOG_LEVEL=3
 
 EXPOSE 8888
 
