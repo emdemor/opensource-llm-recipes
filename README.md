@@ -1,9 +1,13 @@
-# Open-Source LLM Experiments
+# 🚀 Open-Source LLM Experiments
 
-**About the Project**
+### ℹ️ About the Project
 This repository serves as a sandbox for experimenting with various open-source LLMs, exploring tasks such as translation, text generation, model fine-tuning, and more. The goal is to explore how LLMs can be applied to real-world problems with a focus on ease of use, reproducibility, and practical outcomes.
 
-## Table of Contents
+
+### ⚠️ Note on Language
+All the notebooks and code in this repository are written in Brazilian Portuguese. If you're not familiar with the language, feel free to use an online translation tool or reach out with any questions.
+
+## 📚 Table of Contents
 1. [Translation Experiments](#translation-experiments)
    - [OpenAI Translation](#openai-translation)
    - [Local Translation with NLLB](#local-translation-with-nllb)
@@ -31,7 +35,9 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### Translation Experiments
+## 🧪 Experiments
+
+### 🌍 Translation Experiments
 
 #### 1. OpenAI Translation
 **Description**: A baseline notebook that uses OpenAI models to translate text from English to Portuguese.  
@@ -46,7 +52,7 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### Language Model Execution
+### 🖥️ Language Model Execution
 
 #### 3. Local Small Language Models (SLM)
 **Description**: Demonstrates how to execute a small language model locally.  
@@ -63,7 +69,7 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### Fine-Tuning
+### 🔧 Fine-Tuning
 
 #### 6. Fine-Tuning LLMs for SQL Generation
 **Description**: Example of fine-tuning a language model to generate SQL queries.  
@@ -84,7 +90,7 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### Text-to-Speech
+### 🗣️ Text-to-Speech
 
 #### 8. Text-to-Speech
 **Description**: Example of generating speech locally using Huggingface and the Parler model.  
@@ -92,7 +98,7 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### Dataset Preparation
+### 🧑‍💻 Dataset Preparation
 
 #### 9. Q&A Dataset Preparation
 **Description**: A notebook for preparing a Portuguese Q&A dataset, which is available at [emdemor/ptbr-question-and-answer](https://huggingface.co/datasets/emdemor/ptbr-question-and-answer).
@@ -104,7 +110,7 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### Question Generation
+### 🤖 Question Generation
 
 #### 14. Fine-Tuning a Question Generator
 **Description**: Fine-tuning a model on Kaggle that generates questions based on a provided context.  
@@ -120,7 +126,7 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### Whisper Transcription
+### 🎤 Whisper Transcription
 
 #### 17. YouTube Transcription with Whisper
 **Description**: A notebook demonstrating how to transcribe audio from a YouTube video using Whisper locally.  
@@ -128,7 +134,7 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### 1984 Project
+### 📚 1984 Project
 
 #### 18. Splitting 1984 for Question Generation
 **Description**: Splitting the book *1984* into multiple chunks and using the [emdemor/question-generator-v2](https://huggingface.co/emdemor/question-generator-v2) model to generate questions and answers for each chunk.  
@@ -145,7 +151,7 @@ This repository serves as a sandbox for experimenting with various open-source L
 
 ---
 
-### Image Generation with Stable Diffusion
+### 🎨 Image Generation with Stable Diffusion
 
 #### 21. Stable Diffusion Image Generation
 **Description**: Initial tests with image generation using Stable Diffusion.  
