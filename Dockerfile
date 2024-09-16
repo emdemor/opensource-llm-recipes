@@ -77,8 +77,8 @@ RUN pip install fastparquet
 RUN pip uninstall typing_extensions -y
 RUN pip install typing_extensions==4.11.0
 
-
-RUN mkdir /project
+# Criar diretórios e definir permissões
+RUN mkdir /project && chmod 777 /project
 RUN mkdir /root/.jupyter
 
 ENV PATH=${PATH}:/usr/local/cuda-12.1/bin
@@ -95,6 +95,9 @@ ENV LD_LIBRARY_PATH="$CUDNN_PATH/lib64:$LD_LIBRARY_PATH"
 #   2: Filtros de logs WARNING.
 #   3: Filtros de logs ERROR.
 ENV TF_CPP_MIN_LOG_LEVEL=3
+
+# Definir permissões padrão para novos arquivos (opcional)
+RUN umask 000
 
 EXPOSE 8888
 
