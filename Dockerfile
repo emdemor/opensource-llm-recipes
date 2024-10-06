@@ -31,7 +31,7 @@ RUN pip install ipympl
 
 # Dependencias
 # RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
-RUN pip install tensorflow==2.13
+RUN pip install tensorflow[and-cuda]
 RUN pip install tensorflow-datasets==4.0.1
 RUN pip install protobuf==4.24.2
 RUN pip install datasets==2.21.0 -q
@@ -59,7 +59,7 @@ RUN pip install rouge_score==0.1.2
 RUN pip install nvitop==1.3.2
 RUN pip install GPUtil==1.4.0
 RUN pip install setuptools-rust==1.10.1
-RUN pip install openai-whisper==20231117
+RUN pip install openai-whisper==20240930
 RUN pip install yt-dlp==2024.8.6
 RUN pip install pydub==0.25.1
 RUN pip install backoff==2.2.1
@@ -76,16 +76,25 @@ RUN pip install fastparquet
 # Coprrecting lib versions
 RUN pip uninstall typing_extensions -y
 RUN pip install typing_extensions==4.11.0
+RUN pip install tf_keras==2.17.0
 
 # Criar diretórios e definir permissões
 RUN mkdir /project && chmod 777 /project
 RUN mkdir /root/.jupyter
 
+ENV PATH=${PATH}:/usr/local/cuda-12/bin
 ENV PATH=${PATH}:/usr/local/cuda-12.1/bin
 ENV PATH=${PATH}:/usr/local/cuda/bin
-ENV PATH=/usr/local/cuda/bin:$PATH
+
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
 ENV CUDNN_PATH="/usr/local/cuda"
+ENV LD_LIBRARY_PATH="$CUDNN_PATH/lib64:$LD_LIBRARY_PATH"
+
+ENV CUDNN_PATH="/usr/local/cuda-12"
+ENV LD_LIBRARY_PATH="$CUDNN_PATH/lib64:$LD_LIBRARY_PATH"
+
+ENV CUDNN_PATH="/usr/local/cuda-12.1"
 ENV LD_LIBRARY_PATH="$CUDNN_PATH/lib64:$LD_LIBRARY_PATH"
 
 
