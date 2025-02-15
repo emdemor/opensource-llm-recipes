@@ -29,8 +29,11 @@ RUN pip install jupyterlab-drawio
 RUN pip install jupyterlab_execute_time
 RUN pip install ipympl
 
+# Install JupyterLab LSP and Python Language Server
+RUN pip install jupyterlab-lsp
+RUN pip install python-lsp-server
+
 # Dependencias
-# RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 RUN pip install tensorflow[and-cuda]
 RUN pip install tensorflow-datasets==4.0.1
 RUN pip install protobuf==4.24.2
@@ -68,10 +71,7 @@ RUN pip install psycopg2-binary
 RUN pip install sqlalchemy
 RUN pip install pyarrow
 RUN pip install fastparquet
-# RUN pip install tensorflow
-
-# RUN pip install jupyterlab-nvdashboard
-# RUN jupyter labextension install jupyterlab-nvdashboard
+RUN pip install tabulate
 
 # Coprrecting lib versions
 RUN pip uninstall typing_extensions -y
@@ -81,6 +81,24 @@ RUN pip install tf_keras==2.17.0
 # Criar diretórios e definir permissões
 RUN mkdir /project && chmod 777 /project
 RUN mkdir /root/.jupyter
+
+# Criar arquivo de configuração do Jupyter para desabilitar o Jedi
+RUN echo "c.Completer.use_jedi = False" >> /root/.jupyter/jupyter_notebook_config.py
+
+# Configurar tema Material Darker automaticamente
+RUN mkdir -p /root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension && \
+    echo '{"theme": "Material Darker"}' > /root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
+
+# # Configurações avançadas do LSP
+# RUN mkdir -p /root/.jupyter/lab/user-settings/@jupyterlab/jupyterlab-lsp && \
+#     echo '{ "experimental": { "enable": true }, "language_servers": { "pylsp": { "argv": ["pylsp"], "languages": ["python"], "version": 2, "mime_types": ["text/x-python", "text/python", "text/x-ipython"] } } }' \
+#     > /root/.jupyter/lab/user-settings/@jupyterlab/jupyterlab-lsp/plugin.jupyterlab-settings
+
+
+# Configurações avançadas do LSP (versão alternativa)
+RUN mkdir -p /root/.jupyter/lab/user-settings/@jupyterlab/lsp-extension && \
+    printf '{\n  "autocompletion": true,\n  "codeHover": true,\n  "diagnostics": true,\n  "highlightTokens": true,\n  "language_servers": {\n    "python": {\n      "serverSettings": {\n        "pylsp": {\n          "plugins": {\n            "pydocstyle": {"enabled": true},\n            "pyflakes": {"enabled": true},\n            "mccabe": {"enabled": true},\n            "pylsp_isort": {"enabled": true},\n            "pylsp_mypy": {"enabled": true},\n            "jedi_completion": {"fuzzy": true}\n          }\n        }\n      }\n    }\n  }\n}' > /root/.jupyter/lab/user-settings/@jupyterlab/lsp-extension/plugins.jupyterlab-settings
+
 
 ENV PATH=${PATH}:/usr/local/cuda-12/bin
 ENV PATH=${PATH}:/usr/local/cuda-12.1/bin
