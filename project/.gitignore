@@ -1,4 +1,5 @@
 ModernBERT-portuguese-adapted/
+bert-base-portuguese-cased-ptbr-test/
 logs/
 23-training-modern-bert/temp_dataset.txt
 .virtual_documents/
