@@ -1,0 +1,42 @@
+# Configuração para Treinamento de Modelo de Linguagem Mascarada (MLM)
+
+# Identificadores e caminhos
+model:
+  base_id: "answerdotai/ModernBERT-base"  # ID do modelo base no Hugging Face Hub
+  tokenizer_path: "domain_tokenizer"       # Caminho para o tokenizador
+  output_dir: "ModernBERT-base-ptbr-full"  # Diretório para salvar o modelo treinado
+
+dataset:
+  id: "emdemor/news-of-the-brazilian-newspaper"  # ID do dataset no HF Hub
+  max_news: 3535            # Número máximo de notícias a usar
+  max_sentences: 3456       # Número máximo de sentenças
+  eval_ratio: 0.1           # Fração dos dados usada para validação
+
+# Parâmetros de treinamento
+training:
+  num_train_epochs: 3                # Número de épocas de treinamento
+  train_batch_size: 4                # Tamanho do batch por dispositivo
+  gradient_accumulation_steps: 2     # Passos de acumulação de gradiente
+  learning_rate: 5.0e-3              # Taxa de aprendizado inicial
+  weight_decay: 0.01                 # Peso de decaimento
+  warmup_steps: 0                    # Passos de aquecimento para o scheduler
+  mlm_probabilities:                 # Probabilidades de mascaramento para diferentes chunks
+    - 0.05
+    - 0.10
+    - 0.15
+    - 0.20
+    - 0.30
+  total_save_limit: 2                # Número máximo de checkpoints a manter
+
+# Otimizações e recursos computacionais
+optimization:
+  use_flash_attention: false     # Usar Flash Attention se disponível
+  fp16: true                     # Usar treinamento em precisão mista
+  push_interval: 10000           # Intervalo de steps para push para o Hub
+  num_workers: 4                 # Número de workers para processamento de dados
+
+# Modo de execução
+execution:
+  testing: false                 # Executar em modo de teste
+  seed: 42                       # Semente para reprodutibilidade
+  device: "auto"                 # "auto", "cuda", ou "cpu"
