@@ -14,7 +14,7 @@ dataset:
 
 # Parâmetros de treinamento
 training:
-  num_train_epochs: 3                # Número de épocas de treinamento
+  num_train_epochs: 1                # Número de épocas de treinamento
   train_batch_size: 4                # Tamanho do batch por dispositivo
   gradient_accumulation_steps: 2     # Passos de acumulação de gradiente
   learning_rate: 5.0e-3              # Taxa de aprendizado inicial
