@@ -32,7 +32,7 @@ training:
   push_interval: 10000           # Intervalo de steps para push para o Hub
   num_workers: 4                 # Número de workers para processamento de dados
   clear_memory_steps: 50         # Número de passos para limpar a memoria
-  memory_log_steps: 10           # Númreo de passos para retornar um log de uso da memória
+  memory_log_steps: 50           # Númreo de passos para retornar um log de uso da memória
 
 # Modo de execução
 execution:
