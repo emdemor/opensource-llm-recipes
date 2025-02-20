@@ -1,5 +1,13 @@
 FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-devel
 
+# Adicionar argumentos para UID/GID do host
+ARG UID=1000
+ARG GID=1000
+
+# Criar usuário e grupo com UID/GID do host
+RUN groupadd -g $GID jovyan && \
+    useradd -u $UID -g $GID -m jovyan
+
 
 # Instalar dependências
 RUN apt-get update && \
@@ -78,26 +86,31 @@ RUN pip uninstall typing_extensions -y
 RUN pip install typing_extensions==4.11.0
 RUN pip install tf_keras==2.17.0
 
-# Criar diretórios e definir permissões
-RUN mkdir /project && chmod 777 /project
-RUN mkdir /root/.jupyter
+# Configurar diretórios com permissões corretas
+RUN mkdir /project && \
+    chown jovyan:jovyan /project && \
+    chmod 755 /project
+
+# Configurar Jupyter como usuário normal
+USER jovyan
+WORKDIR /home/jovyan
 
 # Criar arquivo de configuração do Jupyter para desabilitar o Jedi
-RUN echo "c.Completer.use_jedi = False" >> /root/.jupyter/jupyter_notebook_config.py
+RUN mkdir -p /home/jovyan/.jupyter && echo "c.Completer.use_jedi = False" >> /home/jovyan/.jupyter/jupyter_notebook_config.py
 
 # Configurar tema Material Darker automaticamente
-RUN mkdir -p /root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension && \
-    echo '{"theme": "Material Darker"}' > /root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
+RUN mkdir -p /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/apputils-extension && \
+    echo '{"theme": "Material Darker"}' > /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
 
 # # Configurações avançadas do LSP
-# RUN mkdir -p /root/.jupyter/lab/user-settings/@jupyterlab/jupyterlab-lsp && \
+# RUN mkdir -p /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/jupyterlab-lsp && \
 #     echo '{ "experimental": { "enable": true }, "language_servers": { "pylsp": { "argv": ["pylsp"], "languages": ["python"], "version": 2, "mime_types": ["text/x-python", "text/python", "text/x-ipython"] } } }' \
-#     > /root/.jupyter/lab/user-settings/@jupyterlab/jupyterlab-lsp/plugin.jupyterlab-settings
+#     > /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/jupyterlab-lsp/plugin.jupyterlab-settings
 
 
 # Configurações avançadas do LSP (versão alternativa)
-RUN mkdir -p /root/.jupyter/lab/user-settings/@jupyterlab/lsp-extension && \
-    printf '{\n  "autocompletion": true,\n  "codeHover": true,\n  "diagnostics": true,\n  "highlightTokens": true,\n  "language_servers": {\n    "python": {\n      "serverSettings": {\n        "pylsp": {\n          "plugins": {\n            "pydocstyle": {"enabled": true},\n            "pyflakes": {"enabled": true},\n            "mccabe": {"enabled": true},\n            "pylsp_isort": {"enabled": true},\n            "pylsp_mypy": {"enabled": true},\n            "jedi_completion": {"fuzzy": true}\n          }\n        }\n      }\n    }\n  }\n}' > /root/.jupyter/lab/user-settings/@jupyterlab/lsp-extension/plugins.jupyterlab-settings
+RUN mkdir -p /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/lsp-extension && \
+    printf '{\n  "autocompletion": true,\n  "codeHover": true,\n  "diagnostics": true,\n  "highlightTokens": true,\n  "language_servers": {\n    "python": {\n      "serverSettings": {\n        "pylsp": {\n          "plugins": {\n            "pydocstyle": {"enabled": true},\n            "pyflakes": {"enabled": true},\n            "mccabe": {"enabled": true},\n            "pylsp_isort": {"enabled": true},\n            "pylsp_mypy": {"enabled": true},\n            "jedi_completion": {"fuzzy": true}\n          }\n        }\n      }\n    }\n  }\n}' > /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/lsp-extension/plugins.jupyterlab-settings
 
 
 ENV PATH=${PATH}:/usr/local/cuda-12/bin
@@ -116,15 +129,16 @@ ENV CUDNN_PATH="/usr/local/cuda-12.1"
 ENV LD_LIBRARY_PATH="$CUDNN_PATH/lib64:$LD_LIBRARY_PATH"
 
 
+ENV HF_HOME=/home/jovyan/.cache/huggingface/models
+ENV HF_DATASETS_CACHE=/home/jovyan/.cache/huggingface/datasets
+
+
 # A variável TF_CPP_MIN_LOG_LEVEL controla o nível de log do TensorFlow:
 #   0: Todos os logs são mostrados (padrão).
 #   1: Filtros de logs INFO.
 #   2: Filtros de logs WARNING.
 #   3: Filtros de logs ERROR.
 ENV TF_CPP_MIN_LOG_LEVEL=3
-
-# Definir permissões padrão para novos arquivos (opcional)
-RUN umask 000
 
 EXPOSE 8888
 
