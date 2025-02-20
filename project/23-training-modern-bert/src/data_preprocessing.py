@@ -19,7 +19,8 @@ class DataPreprocessor:
     def load_and_prepare_data(self) -> Dataset:
         raw_dataset = load_dataset(self.config.id, split="train")
         df = raw_dataset.to_pandas().sample(frac=1).reset_index(drop=True)
-        sample_df = df.sample(min(self.config.max_news, len(df)))
+        max_news = self.config.max_news or len(df)
+        sample_df = df.sample(min(max_news, len(df)))
 
         combined_texts = sample_df["text"].to_list() + sample_df["title"].to_list()
         sentences = [
@@ -28,7 +29,8 @@ class DataPreprocessor:
             if text
             for phrase in self.split_into_sentences(text)
         ]
+        max_sentences = self.config.max_sentences or len(sentences)
         sentences_sample = (
-            pd.Series(sentences).sample(self.config.max_sentences).to_list()
+            pd.Series(sentences).sample(min(max_sentences, len(sentences))).to_list()
         )
         return Dataset.from_dict({"text": sentences_sample})

@@ -21,8 +21,8 @@ class ModelConfig(BaseModel):
 
 class DatasetConfig(BaseModel):
     id: str = Field(..., description="ID do dataset no HF Hub")
-    max_news: int = Field(..., description="Número máximo de notícias a usar")
-    max_sentences: int = Field(..., description="Número máximo de sentenças")
+    max_news: int | None = Field(..., description="Número máximo de notícias a usar")
+    max_sentences: int | None = Field(..., description="Número máximo de sentenças")
     eval_ratio: float = Field(..., description="Fração dos dados usada para validação")
 
 
