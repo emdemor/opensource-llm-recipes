@@ -19,7 +19,7 @@ class Trainer:
         self.global_step = 0
         self.start_epoch = 0
 
-    def train(self, dataset):
+    def train(self, dataset, from_checkpoint=True):
         training_params = TrainingParams(self.config)
         training_params.calculate_derived_params(len(dataset))
 
@@ -31,7 +31,11 @@ class Trainer:
             self.config.model.output_dir, self.model, optimizer, scheduler, training_params.total_save_limit
         )
 
-        self.global_step, self.start_epoch = checkpoint_manager.load_latest_checkpoint()
+        if from_checkpoint:
+            self.global_step, self.start_epoch = checkpoint_manager.load_latest_checkpoint()
+        else:
+            self.global_step, self.start_epoch = (0, 0)
+            
         logger.info(f"Starting training with global_step = {self.global_step} | epoch = {self.start_epoch}")
 
         try:
