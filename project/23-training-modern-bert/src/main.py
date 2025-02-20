@@ -6,7 +6,7 @@ from .trainer import Trainer
 logger = set_logger()
 
 
-def run(config_path):
+def run(config_path, from_checkpoint=True):
     # Carrega a configuração
     logger.info(f"Read config from {config_path}")
     config = parse_yaml(config_path)
@@ -21,4 +21,4 @@ def run(config_path):
 
     # Treinamento
     trainer = Trainer(config, model, tokenizer)
-    trainer.train(dataset)
+    trainer.train(dataset, from_checkpoint=from_checkpoint)

@@ -1,4 +1,8 @@
+from collections import defaultdict
+
 import torch
+import matplotlib.pyplot as plt
+
 from tqdm.auto import tqdm
 
 from .config import set_logger
@@ -18,6 +22,7 @@ class Trainer:
         self.device = model.device
         self.global_step = 0
         self.start_epoch = 0
+        self.training_history = defaultdict(list)
 
     def train(self, dataset, from_checkpoint=True):
         training_params = TrainingParams(self.config)
@@ -28,19 +33,29 @@ class Trainer:
         ).setup_components()
 
         checkpoint_manager = CheckpointManager(
-            self.config.model.output_dir, self.model, optimizer, scheduler, training_params.total_save_limit
+            self.config.model.output_dir,
+            self.model,
+            optimizer,
+            scheduler,
+            training_params.total_save_limit,
         )
 
         if from_checkpoint:
-            self.global_step, self.start_epoch = checkpoint_manager.load_latest_checkpoint()
+            self.global_step, self.start_epoch = (
+                checkpoint_manager.load_latest_checkpoint()
+            )
         else:
             self.global_step, self.start_epoch = (0, 0)
-            
-        logger.info(f"Starting training with global_step = {self.global_step} | epoch = {self.start_epoch}")
+
+        logger.info(
+            f"Starting training with global_step = {self.global_step} | epoch = {self.start_epoch}"
+        )
 
         try:
             for epoch in range(self.start_epoch, training_params.num_train_epochs):
-                logger.info(f"Starting epoch {1+epoch}/{training_params.num_train_epochs}")
+                logger.info(
+                    f"Starting epoch {1+epoch}/{training_params.num_train_epochs}"
+                )
                 self._train_epoch(
                     epoch,
                     training_params,
@@ -57,6 +72,65 @@ class Trainer:
             logger.info("Training interrupted. Saving final checkpoint...")
             checkpoint_manager.save_checkpoint(self.global_step, epoch, self.tokenizer)
 
+    def plot_training_progress(self, save_path=None):
+        """
+        Plota a evolução da loss de treinamento e avaliação ao longo dos steps.
+
+        Args:
+            save_path (str, optional): Caminho para salvar o gráfico.
+                                    Se None, exibe o gráfico interativamente.
+        """
+        plt.figure(figsize=(12, 6))
+
+        # Plotando loss de treinamento
+        plt.plot(
+            self.training_history["steps"],
+            self.training_history["train_loss"],
+            label="Training Loss",
+            alpha=0.5,
+            color="blue",
+        )
+
+        # Plotando loss de avaliação
+        if len(self.training_history["eval_steps"]) > 0:
+            plt.plot(
+                self.training_history["eval_steps"],
+                self.training_history["eval_loss"],
+                label="Evaluation Loss",
+                marker="o",
+                linestyle="--",
+                color="red",
+            )
+
+        plt.xlabel("Training Steps")
+        plt.ylabel("Loss")
+        plt.title("Training and Evaluation Loss Over Time")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+
+        if save_path:
+            plt.savefig(save_path)
+            plt.close()
+        else:
+            plt.show()
+
+    def save_training_history(self, filepath):
+        """
+        Salva o histórico de treinamento em um arquivo para análise posterior.
+        
+        Args:
+            filepath (str): Caminho onde o arquivo será salvo
+        """
+        import json
+        
+        history_to_save = {
+            k: [float(v) for v in vals] 
+            for k, vals in self.training_history.items()
+        }
+        
+        with open(filepath, 'w') as f:
+            json.dump(history_to_save, f)
+
     def _train_epoch(
         self, epoch, params, optimizer, scaler, scheduler, checkpoint_manager, dataset
     ):
@@ -67,7 +141,9 @@ class Trainer:
         for chunk_number, mlm_probability in enumerate(
             self.config.training.mlm_probabilities
         ):
-            logger.info(f"Starting chunk {1+chunk_number}/{params.num_chunks} | MLM Prob = {mlm_probability}")
+            logger.info(
+                f"Starting chunk {1+chunk_number}/{params.num_chunks} | MLM Prob = {mlm_probability}"
+            )
             data_collator = DynamicPaddingDataCollator(
                 self.tokenizer, mlm_probability=mlm_probability
             )
@@ -95,7 +171,7 @@ class Trainer:
         eval_end_idx = eval_start_idx + params.eval_size_per_chunk - 1
         train_start_idx = chunk_number * params.chunk_size + params.eval_size_per_chunk
         train_end_idx = train_start_idx + params.chunk_train_size - 1
-        
+
         logger.info(
             f"Splitting | "
             f"chunk: {eval_start_idx}-{train_end_idx} | "
@@ -175,7 +251,12 @@ class Trainer:
         inputs = data_collator(batch)
         loss = forward_pass(self.model, inputs, self.device)
         scaler.scale(loss / self.config.training.gradient_accumulation_steps).backward()
-        return None  # loss.item()
+
+        current_loss = loss.item()
+        self.training_history["train_loss"].append(current_loss)
+        self.training_history["steps"].append(self.global_step)
+
+        return current_loss
 
     def _update_model(self, optimizer, scaler, scheduler):
         scaler.step(optimizer)
@@ -202,7 +283,10 @@ class Trainer:
                 batch_size=params.train_batch_size_per_device,
                 device=self.device,
             )
+            self.training_history["eval_loss"].append(eval_loss)
+            self.training_history["eval_steps"].append(self.global_step)
             logger.info(f"Evaluation loss at step {self.global_step}: {eval_loss}")
+            self.plot_training_progress()
 
         if self.global_step % self.config.training.push_interval == 0:
             checkpoint_manager.save_checkpoint(
